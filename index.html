@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEMA School - Student Enquiry Form 2026-2027</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .form-container { padding: 30px; }
+        fieldset {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        legend {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e3c72;
+            padding: 0 10px;
+            margin-left: -10px;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .row.full { grid-template-columns: 1fr; }
+        .row.half { grid-template-columns: 1fr 1fr; }
+        .form-group { display: flex; flex-direction: column; }
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 13px;
+        }
+        input, select, textarea {
+            padding: 10px;
+            border: 1.5px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+        input.uppercase { text-transform: uppercase; }
+        .form-group.required label::after {
+            content: ' *';
+            color: red;
+        }
+        .gender-group, .referred-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        .gender-group label, .referred-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            font-weight: normal;
+            margin-top: 0;
+        }
+        .gender-group input, .referred-group input {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+        .source-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .source-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        .source-group input {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+        .fee-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #1e3c72;
+            border-bottom: 2px solid #ddd;
+        }
+        tr:hover { background: #f9f9f9; }
+        .total-row {
+            background: #e8f0fe;
+            font-weight: bold;
+        }
+        .grand-total-row {
+            background: #1e3c72;
+            color: white;
+            font-weight: bold;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 30px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
+        .btn-reset {
+            background: #f44336;
+            color: white;
+        }
+        .btn-reset:hover { background: #d32f2f; }
+        .btn-pdf {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-pdf:hover { background: #388E3C; }
+        .age-display {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+        .success-msg {
+            display: none;
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .fee-data {
+            background: #fff3e0;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+        @media print {
+            body { background: white; }
+            .buttons { display: none; }
+            .container { box-shadow: none; }
+        }
+        .sibling-section {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .documents-section {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .doc-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        .doc-list h4 {
+            color: #1e3c72;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+        .doc-list ul { list-style: none; padding: 0; }
+        .doc-list li {
+            padding: 8px 0;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .doc-list li:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HEMA HIGHER SECONDARY SCHOOL</h1>
+            <p>Affiliated to CBSE New Delhi | D-Sector, Security Line, Govindpura, BHEL, Bhopal - 462023</p>
+            <p>Student Enquiry Form - Academic Session 2026-2027</p>
+        </div>
+
+        <div class="form-container">
+            <div class="success-msg" id="successMsg">✓ Form submitted successfully! PDF ready for printing.</div>
+
+            <form id="enquiryForm">
+                <!-- BASIC INFORMATION -->
+                <fieldset>
+                    <legend>📋 BASIC INFORMATION</legend>
+                    <div class="row half">
+                        <div class="form-group">
+                            <label for="sno">S.NO. (MANUAL)</label>
+                            <input type="text" id="sno" name="sno" placeholder="e.g., 2026001" class="uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="date">DATE</label>
+                            <input type="date" id="date" name="date">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- STUDENT DETAILS -->
+                <fieldset>
+                    <legend>👤 STUDENT DETAILS</legend>
+                    <div class="row">
+                        <div class="form-group required">
+                            <label for="studentFirst">FIRST NAME</label>
+                            <input type="text" id="studentFirst" name="studentFirst" class="uppercase" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentMiddle">MIDDLE NAME</label>
+                            <input type="text" id="studentMiddle" name="studentMiddle" class="uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentSurname">SURNAME</label>
+                            <input type="text" id="studentSurname" name="studentSurname" class="uppercase">
+                        </div>
+                    </div>
+
+                    <div class="row half">
+                        <div class="form-group">
+                            <label>GENDER</label>
+                            <div class="gender-group">
+                                <label><input type="radio" name="gender" value="MALE"> MALE</label>
+                                <label><input type="radio" name="gender" value="FEMALE"> FEMALE</label>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="classApplied">CLASS APPLYING FOR</label>
+                            <select id="classApplied" name="classApplied" required>
+                                <option value="">-- SELECT CLASS --</option>
+                                <option value="NURSERY">NURSERY</option>
+                                <option value="KG I">KG I</option>
+                                <option value="KG II">KG II</option>
+                                <option value="I">CLASS I</option>
+                                <option value="II">CLASS II</option>
+                                <option value="III">CLASS III</option>
+                                <option value="IV">CLASS IV</option>
+                                <option value="V">CLASS V</option>
+                                <option value="VI">CLASS VI</option>
+                                <option value="VII">CLASS VII</option>
+                                <option value="VIII">CLASS VIII</option>
+                                <option value="IX">CLASS IX</option>
+                                <option value="X">CLASS X</option>
+                                <option value="XI">CLASS XI</option>
+                                <option value="XII">CLASS XII</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row half">
+                        <div class="form-group required">
+                            <label for="dob">DATE OF BIRTH</label>
+                            <input type="date" id="dob" name="dob" required>
+                        </div>
+                        <div class="form-group">
+                            <label>AGE (AUTO-CALCULATED)</label>
+                            <div id="ageDisplay" class="age-display">-- Select DOB --</div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- SIBLING DETAILS -->
+                <fieldset>
+                    <legend>👨‍👩‍👧‍👦 SIBLING DETAILS (IF ANY)</legend>
+                    <div class="sibling-section">
+                        <h3 style="margin-bottom: 15px; color: #1e3c72;">SIBLING 1</h3>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="sib1Name">NAME</label>
+                                <input type="text" id="sib1Name" name="sib1Name" class="uppercase">
+                            </div>
+                            <div class="form-group">
+                                <label for="sib1School">SCHOOL</label>
+                                <input type="text" id="sib1School" name="sib1School" class="uppercase">
+                            </div>
+                            <div class="form-group">
+                                <label for="sib1Class">CLASS</label>
+                                <select id="sib1Class" name="sib1Class">
+                                    <option value="">-- SELECT --</option>
+                                    <option value="NURSERY">NURSERY</option>
+                                    <option value="KG I">KG I</option>
+                                    <option value="KG II">KG II</option>
+                                    <option value="I">CLASS I</option>
+                                    <option value="II">CLASS II</option>
+                                    <option value="III">CLASS III</option>
+                                    <option value="IV">CLASS IV</option>
+                                    <option value="V">CLASS V</option>
+                                    <option value="VI">CLASS VI</option>
+                                    <option value="VII">CLASS VII</option>
+                                    <option value="VIII">CLASS VIII</option>
+                                    <option value="IX">CLASS IX</option>
+                                    <option value="X">CLASS X</option>
+                                    <option value="XI">CLASS XI</option>
+                                    <option value="XII">CLASS XII</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="sib1Section">SECTION</label>
+                                <select id="sib1Section" name="sib1Section">
+                                    <option value="">-- SELECT --</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="form-group"></div>
+                        </div>
+                    </div>
+
+                    <div class="sibling-section">
+                        <h3 style="margin-bottom: 15px; color: #1e3c72;">SIBLING 2</h3>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="sib2Name">NAME</label>
+                                <input type="text" id="sib2Name" name="sib2Name" class="uppercase">
+                            </div>
+                            <div class="form-group">
+                                <label for="sib2School">SCHOOL</label>
+                                <input type="text" id="sib2School" name="sib2School" class="uppercase">
+                            </div>
+                            <div class="form-group">
+                                <label for="sib2Class">CLASS</label>
+                                <select id="sib2Class" name="sib2Class">
+                                    <option value="">-- SELECT --</option>
+                                    <option value="NURSERY">NURSERY</option>
+                                    <option value="KG I">KG I</option>
+                                    <option value="KG II">KG II</option>
+                                    <option value="I">CLASS I</option>
+                                    <option value="II">CLASS II</option>
+                                    <option value="III">CLASS III</option>
+                                    <option value="IV">CLASS IV</option>
+                                    <option value="V">CLASS V</option>
+                                    <option value="VI">CLASS VI</option>
+                                    <option value="VII">CLASS VII</option>
+                                    <option value="VIII">CLASS VIII</option>
+                                    <option value="IX">CLASS IX</option>
+                                    <option value="X">CLASS X</option>
+                                    <option value="XI">CLASS XI</option>
+                                    <option value="XII">CLASS XII</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="sib2Section">SECTION</label>
+                                <select id="sib2Section" name="sib2Section">
+                                    <option value="">-- SELECT --</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="form-group"></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- PARENT DETAILS -->
+                <fieldset>
+                    <legend>👨‍👩 PARENT DETAILS</legend>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="fatherFirst">FATHER'S FIRST NAME</label>
+                            <input type="text" id="fatherFirst" name="fatherFirst" class="uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="fatherMiddle">FATHER'S MIDDLE NAME</label>
+                            <input type="text" id="fatherMiddle" name="fatherMiddle" class="uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="fatherSurname">FATHER'S SURNAME</label>
+                            <input type="text" id="fatherSurname" name="fatherSurname" class="uppercase">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="motherFirst">MOTHER'S FIRST NAME</label>
+                            <input type="text" id="motherFirst" name="motherFirst" class="uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="motherMiddle">MOTHER'S MIDDLE NAME</label>
+                            <input type="text" id="motherMiddle" name="motherMiddle" class="uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="motherSurname">MOTHER'S SURNAME</label>
+                            <input type="text" id="motherSurname" name="motherSurname" class="uppercase">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group required">
+                            <label for="fatherMobile">FATHER'S MOBILE</label>
+                            <input type="tel" id="fatherMobile" name="fatherMobile" placeholder="10-digit mobile" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="motherMobile">MOTHER'S MOBILE</label>
+                            <input type="tel" id="motherMobile" name="motherMobile" placeholder="10-digit mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="landline">LANDLINE (OPTIONAL)</label>
+                            <input type="tel" id="landline" name="landline">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- CONTACT DETAILS -->
+                <fieldset>
+                    <legend>📍 CONTACT DETAILS</legend>
+                    <div class="row full">
+                        <div class="form-group required">
+                            <label for="address">ADDRESS</label>
+                            <textarea id="address" name="address" rows="2" class="uppercase" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row half">
+                        <div class="form-group">
+                            <label for="area">AREA/LOCALITY</label>
+                            <input type="text" id="area" name="area" class="uppercase">
+                        </div>
+                        <div class="form-group required">
+                            <label for="state">STATE</label>
+                            <select id="state" name="state" required>
+                                <option value="">-- SELECT STATE --</option>
+                                <option value="ANDAMAN AND NICOBAR ISLANDS">ANDAMAN AND NICOBAR ISLANDS</option>
+                                <option value="ANDHRA PRADESH">ANDHRA PRADESH</option>
+                                <option value="ARUNACHAL PRADESH">ARUNACHAL PRADESH</option>
+                                <option value="ASSAM">ASSAM</option>
+                                <option value="BIHAR">BIHAR</option>
+                                <option value="CHANDIGARH">CHANDIGARH</option>
+                                <option value="CHHATTISGARH">CHHATTISGARH</option>
+                                <option value="DADRA AND NAGAR HAVELI AND DAMAN AND DIU">DADRA AND NAGAR HAVELI AND DAMAN AND DIU</option>
+                                <option value="DELHI">DELHI</option>
+                                <option value="GOA">GOA</option>
+                                <option value="GUJARAT">GUJARAT</option>
+                                <option value="HARYANA">HARYANA</option>
+                                <option value="HIMACHAL PRADESH">HIMACHAL PRADESH</option>
+                                <option value="JAMMU AND KASHMIR">JAMMU AND KASHMIR</option>
+                                <option value="JHARKHAND">JHARKHAND</option>
+                                <option value="KARNATAKA">KARNATAKA</option>
+                                <option value="KERALA">KERALA</option>
+                                <option value="LADAKH">LADAKH</option>
+                                <option value="LAKSHADWEEP">LAKSHADWEEP</option>
+                                <option value="MADHYA PRADESH">MADHYA PRADESH</option>
+                                <option value="MAHARASHTRA">MAHARASHTRA</option>
+                                <option value="MANIPUR">MANIPUR</option>
+                                <option value="MEGHALAYA">MEGHALAYA</option>
+                                <option value="MIZORAM">MIZORAM</option>
+                                <option value="NAGALAND">NAGALAND</option>
+                                <option value="ODISHA">ODISHA</option>
+                                <option value="PUDUCHERRY">PUDUCHERRY</option>
+                                <option value="PUNJAB">PUNJAB</option>
+                                <option value="RAJASTHAN">RAJASTHAN</option>
+                                <option value="SIKKIM">SIKKIM</option>
+                                <option value="TAMIL NADU">TAMIL NADU</option>
+                                <option value="TELANGANA">TELANGANA</option>
+                                <option value="TRIPURA">TRIPURA</option>
+                                <option value="UTTAR PRADESH">UTTAR PRADESH</option>
+                                <option value="UTTARAKHAND">UTTARAKHAND</option>
+                                <option value="WEST BENGAL">WEST BENGAL</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- SOURCE OF INFORMATION -->
+                <fieldset>
+                    <legend>📢 SOURCE OF INFORMATION</legend>
+                    <div class="form-group">
+                        <label>HOW DID YOU KNOW ABOUT US?</label>
+                        <div class="source-group">
+                            <label><input type="checkbox" name="source" value="NEWSPAPER"> NEWSPAPER</label>
+                            <label><input type="checkbox" name="source" value="SCHOOL WEBSITE"> SCHOOL WEBSITE</label>
+                            <label><input type="checkbox" name="source" value="FACEBOOK"> FACEBOOK</label>
+                            <label><input type="checkbox" name="source" value="INSTAGRAM"> INSTAGRAM</label>
+                            <label><input type="checkbox" name="source" value="BILLBOARD"> BILLBOARD</label>
+                            <label><input type="checkbox" name="source" value="WORD OF MOUTH"> WORD OF MOUTH</label>
+                        </div>
+                    </div>
+
+                    <div class="row full">
+                        <div class="form-group">
+                            <label>IF REFERRED, PLEASE INDICATE:</label>
+                            <div class="referred-group">
+                                <label><input type="radio" name="referredType" value="MEMBER"> MEMBER</label>
+                                <label><input type="radio" name="referredType" value="PARENT"> PARENT</label>
+                                <label><input type="radio" name="referredType" value="STAFF"> STAFF</label>
+                                <label><input type="radio" name="referredType" value="OTHER"> OTHER</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row full">
+                        <div class="form-group">
+                            <label for="referredName">REFERRED PERSON'S NAME (IF APPLICABLE)</label>
+                            <input type="text" id="referredName" name="referredName" class="uppercase">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- FEE DETAILS -->
+                <fieldset>
+                    <legend>💰 FEE STRUCTURE - 2026-2027</legend>
+                    <div class="row full">
+                        <div class="form-group required">
+                            <label for="classForFee">SELECT CLASS TO VIEW FEES</label>
+                            <select id="classForFee" name="classForFee" required>
+                                <option value="">-- SELECT CLASS --</option>
+                                <option value="NURSERY, KG I & KG II">NURSERY, KG I & KG II</option>
+                                <option value="I">CLASS I</option>
+                                <option value="II">CLASS II</option>
+                                <option value="III">CLASS III</option>
+                                <option value="IV-V">CLASS IV-V</option>
+                                <option value="VI-VIII">CLASS VI-VIII</option>
+                                <option value="IX-X">CLASS IX-X</option>
+                                <option value="XI-XII">CLASS XI-XII</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="fee-section">
+                        <table id="feeTable">
+                            <thead>
+                                <tr>
+                                    <th>S.NO.</th>
+                                    <th>PARTICULAR</th>
+                                    <th>AMOUNT (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1.</td>
+                                    <td>ADMISSION FEE</td>
+                                    <td><input type="number" id="feeAdmission" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td>2.</td>
+                                    <td>DEVELOPMENT FUND</td>
+                                    <td><input type="number" id="feeDevelopment" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td>3.</td>
+                                    <td>CAUTION MONEY DEPOSIT</td>
+                                    <td><input type="number" id="feeCaution" readonly></td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="2"><strong>TOTAL ONE-TIME (1-3)</strong></td>
+                                    <td><input type="number" id="totalOneTime" readonly style="font-weight:bold;background:#e8f0fe;"></td>
+                                </tr>
+                                <tr>
+                                    <td>4.</td>
+                                    <td>TUITION FEE (9 INSTALLMENTS)</td>
+                                    <td><input type="number" id="feeTuition" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td>5.</td>
+                                    <td>ANNUAL CHARGES (9 MONTHS)</td>
+                                    <td><input type="number" id="feeAnnual" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td>6.</td>
+                                    <td>TRANSPORT FEE (OPTIONAL - MANUAL)</td>
+                                    <td><input type="number" id="feeTransport" placeholder="Enter if applicable"></td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="2"><strong>TOTAL RECURRING (4-6)</strong></td>
+                                    <td><input type="number" id="totalRecurring" readonly style="font-weight:bold;background:#e8f0fe;"></td>
+                                </tr>
+                                <tr class="grand-total-row">
+                                    <td colspan="2"><strong>GRAND TOTAL</strong></td>
+                                    <td><input type="number" id="grandTotal" readonly style="font-weight:bold;background:#1e3c72;color:white;"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="fee-data" id="feeInfo" style="display:none;"></div>
+                    </div>
+                </fieldset>
+
+                <!-- DOCUMENTS REQUIRED FOR ADMISSION -->
+                <fieldset>
+                    <legend>📄 DOCUMENTS REQUIRED FOR ADMISSION</legend>
+                    <div class="documents-section">
+                        <div class="doc-column">
+                            <div class="doc-list">
+                                <h4>📋 STUDENT DOCUMENTS</h4>
+                                <ul>
+                                    <li>Digital Birth Certificate (Municipal/Competent Authority) - Copy</li>
+                                    <li>Previous Class Report Card - Copy</li>
+                                    <li>Transfer Certificate (TC) duly countersigned (if applicable) - Original</li>
+                                    <li>Aadhaar Card of Student - Copy</li>
+                                    <li>PAN Number (Udise Plus)/Apaar ID/Samagra ID & Family ID (if applicable) - Copy</li>
+                                    <li>Passport-size Photo – Student (1) – Color Photo</li>
+                                    <li>Digital Caste Certificate of Student (SC/ST/OBC) - Copy</li>
+                                    <li>Special Category Documents (EWS / Single Parent / CWSN / Defence / Government Employee) - Copy</li>
+                                    <li>Bank Account Details – Student’s Passbook Copy – (if applicable)</li>
+                                </ul>
+                            </div>
+                            <div class="doc-list">
+                                <h4>👨‍👩 PARENT DOCUMENTS</h4>
+                                <ul>
+                                    <li>Aadhaar Card of Father - Copy</li>
+                                    <li>Aadhaar Card of Mother - Copy</li>
+                                    <li>Passport-size Photo – Father (1)</li>
+                                    <li>Passport-size Photo – Mother (1)</li>
+                                    <li>Address Proof (Electricity bill / Rent agreement / Passport, etc.) - Copy</li>
+                                    <li>Bank Account Details (if required) - Copy</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- BUTTONS -->
+                <div class="buttons">
+                    <button type="button" class="btn-pdf" onclick="generateAndPrint()">🖨️ GENERATE PDF & PRINT</button>
+                    <button type="submit" class="btn-submit">✓ SUBMIT FORM</button>
+                    <button type="reset" class="btn-reset">✕ CLEAR FORM</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Fee Structure Data from Excel [file:12]
+        const feeData = {
+            "NURSERY, KG I & KG II": { admission: 27000, development: 5000, caution: 3000, tuition: 14645.2, annual: 6955 },
+            "I":  { admission: 30000, development: 5000, caution: 3000, tuition: 21296,   annual: 9754 },
+            "II": { admission: 30000, development: 5000, caution: 3000, tuition: 22634,   annual: 13906 },
+            "III":{ admission: 30000, development: 5000, caution: 3000, tuition: 23953.6, annual: 15304 },
+            "IV-V":{ admission: 30000, development: 5000, caution: 3000, tuition: 26620,  annual: 17390 },
+            "VI-VIII":{ admission: 41000, development: 5000, caution: 3000, tuition: 29280.2, annual: 17385 },
+            "IX-X":{ admission: 55000, development: 5000, caution: 3000, tuition: 29286.4, annual: 23634 },
+            "XI-XII":{ admission: 62000, development: 5000, caution: 3000, tuition: 29280, annual: 25044 }
+        };
+
+        // Auto-uppercase
+        document.querySelectorAll('.uppercase').forEach(input => {
+            input.addEventListener('input', function () {
+                this.value = this.value.toUpperCase();
+            });
+        });
+
+        // Today date
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Age calc
+        document.getElementById('dob').addEventListener('change', function () {
+            const dob = new Date(this.value);
+            const today = new Date();
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            let days = today.getDate() - dob.getDate();
+            if (days < 0) {
+                months--;
+                days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            document.getElementById('ageDisplay').innerHTML =
+                '<strong>' + years + ' YEARS ' + months + ' MONTHS ' + days + ' DAYS</strong>';
+        });
+
+        // Class → Fees
+        document.getElementById('classForFee').addEventListener('change', function () {
+            const sel = this.value;
+            const fees = feeData[sel];
+            if (!fees) {
+                ['feeAdmission','feeDevelopment','feeCaution','feeTuition','feeAnnual',
+                 'totalOneTime','totalRecurring','grandTotal','feeTransport']
+                 .forEach(id => document.getElementById(id).value = '');
+                document.getElementById('feeInfo').style.display = 'none';
+                return;
+            }
+            document.getElementById('feeAdmission').value   = fees.admission;
+            document.getElementById('feeDevelopment').value = fees.development;
+            document.getElementById('feeCaution').value     = fees.caution;
+            document.getElementById('feeTuition').value     = fees.tuition;
+            document.getElementById('feeAnnual').value      = fees.annual;
+
+            const oneTime   = fees.admission + fees.development + fees.caution;
+            const recurring = fees.tuition + fees.annual;
+
+            document.getElementById('totalOneTime').value   = oneTime;
+            document.getElementById('totalRecurring').value = recurring;
+            document.getElementById('grandTotal').value     = oneTime + recurring;
+
+            document.getElementById('feeInfo').innerHTML =
+                '<strong>Fee Breakdown:</strong><br>' +
+                'One-Time: ₹' + oneTime + '<br>' +
+                'Recurring (9 months): ₹' + recurring +
+                '<br><em>Transport fee is optional - enter if applicable</em>';
+            document.getElementById('feeInfo').style.display = 'block';
+        });
+
+        // Transport → Grand total
+        document.getElementById('feeTransport').addEventListener('input', function () {
+            const oneTime   = parseFloat(document.getElementById('totalOneTime').value)   || 0;
+            const recurring = parseFloat(document.getElementById('totalRecurring').value) || 0;
+            const transport = parseFloat(this.value) || 0;
+            document.getElementById('grandTotal').value = oneTime + recurring + transport;
+        });
+
+        // Generate PDF + print
+        function generateAndPrint() {
+            const element = document.querySelector('.container');
+            const opt = {
+                margin: 10,
+                filename: 'HEMA_School_Enquiry_Form_' + new Date().toISOString().split('T')[0] + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+            html2pdf().set(opt).from(element).save().then(() => {
+                setTimeout(() => { window.print(); }, 500);
+            });
+        }
+
+        // Submit
+        document.getElementById('enquiryForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            console.log('Form Data:', data);
+            document.getElementById('successMsg').style.display = 'block';
+            localStorage.setItem('enquiry_' + new Date().getTime(), JSON.stringify({
+                timestamp: new Date().toISOString(),
+                ...data
+            }));
+            setTimeout(() => {
+                alert('✓ Form submitted successfully!\n\nGenerating PDF for printing...');
+                generateAndPrint();
+            }, 500);
+        });
+
+        console.log('%cHEMA School Enquiry Form Ready', 'color:#667eea;font-size:16px;font-weight:bold;');
+    </script>
+</body>
+</html>
